@@ -8,6 +8,8 @@ import "./styles/Feed.css"
 import clockIcon from './images/clock.svg'
 import userIcon from "./images/user.svg";
 
+import Empty from "./Empty"
+
 export default function Main(){
 
     const posts = [
@@ -27,10 +29,20 @@ export default function Main(){
 
     return(
         <main>
+
+        {posts.length === 0 && (
+            <div className='feed-status'>
+                <Empty/>
+            </div>
+        )}
+        
+        {posts.length > 0 && (
+            <>
             <header>
             <h1>Seu Feed</h1>
-                <span>Acompanhe o que seus amigos estão pensando em tempo real  </span>
+                <h2>Acompanhe o que seus amigos estão pensando em tempo real  </h2>
             </header>
+
             <section className='feed'>
             {posts.map((post) => (
                 <article key={post.id}>
@@ -50,6 +62,9 @@ export default function Main(){
                 </article>
             ))}
             </section>
+            </>
+        )}
+
         </main>
     )
 }
