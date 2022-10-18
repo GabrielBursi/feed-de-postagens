@@ -6,6 +6,8 @@ import userIcon from '../images/user.svg';
 import paperPlaneIcon from '../images/paper-plane.svg';
 import loader from "../images/loader-white.svg";
 
+import errors from '../config/error';
+
 export default function PostForm(props) {
   const [history, setHistory] = useState('');
   const [userName, setUserName] = useState('');
@@ -14,7 +16,10 @@ export default function PostForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
+
     setLoading(true);
+    setErrorMessage(null);
+
     fetch("http://localhost:3001/posts", {
       method: "POST",
       body: JSON.stringify({ content: history, userName }),
@@ -22,7 +27,15 @@ export default function PostForm(props) {
         "Content-Type": "application/json",
       },
     })
-      .then(() => {
+      .then(async r => {
+        if(!r.ok){
+          const body = await r.json()
+          setErrorMessage(
+            errors[body.code] || `Ocorreu um erro ao cadastrar o post!)`
+          );
+          return
+        }
+
         props.onSubmit({ history, userName });
         setHistory("");
         setUserName("");
@@ -53,7 +66,7 @@ export default function PostForm(props) {
           onChange={(event) => setUserName(event.target.value)}
         />
 
-        <button type="submit" disabled={loading || !history}>
+        <button type="submit" disabled={loading}>
           {!loading && <img src={paperPlaneIcon} alt="Paper plane" />}
           {loading && <img src={loader} alt="loading" className="spin" />}
           Publicar
