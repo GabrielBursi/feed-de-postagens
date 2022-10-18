@@ -2,32 +2,39 @@ import { useState, useEffect } from "react";
 import Feed from "../components/Feed";
 
 export default function MostViewed() {
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setError] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:3001/posts/most-viewed")
-      .then(async (r) => {
-        
-        if(!r.ok){
-          setError(true)
-          return
+    
+    async function loadPosts() {
+
+      try {
+        const response = await fetch("http://localhost:3001/posts");
+
+        if (!response.ok) {
+          setError(true);
+          return;
         }
 
-        const body = await r.json();
+        const body = await response.json();
+
         setPosts(
           body.map((post) => ({
             ...post,
             publishedAt: new Date(post.publishedAt),
           }))
         );
-      })
-      .catch((error) => {
+      } catch (error) {
         setError(true);
         console.log(error.message);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPosts();
   }, []);
 
   return (

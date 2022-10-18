@@ -9,26 +9,35 @@ export default function Home() {
   const [hasError, setError] = useState(false);
 
   useEffect(()=>{
-    fetch('http://localhost:3001/posts')
-      .then(async (r) => {
+    async function loadPosts(){
 
-        if(!r.ok){
+      try{
+
+        const response = await fetch("http://localhost:3001/posts");
+
+        if(!response.ok){
           setError(true)
           return
         }
 
-        const body = await r.json()
+        const body = await response.json()
+
         setPosts(body.map(post => ({
           ...post,
           publishedAt: new Date(post.publishedAt)
         })))
-        
-      })
-      .catch(error => {
+
+      }catch(error){
+
         setError(true)
         console.log(error.message)
-      })
-      .finally(() => setLoading(false))
+
+      }finally{
+        setLoading(false)
+      }
+      
+    }
+    loadPosts()
   }, [])
 
   function handleSubmit({ history, userName }) {
