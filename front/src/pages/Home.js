@@ -6,19 +6,27 @@ import PostForm from '../components/PostForm';
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hasError, setError] = useState(false);
 
   useEffect(()=>{
-    fetch('http://localhost:3001/posts').then(async (r) => {
+    fetch('http://localhost:3001/posts')
+    .then(async (r) => {
       const body = await r.json()
       setPosts(body.map(post => ({
         ...post,
         publishedAt: new Date(post.publishedAt)
       })))
-      setLoading(false)
+      
     })
+    .catch(error => {
+      setError(true)
+      console.log(error)
+    })
+    .finally(() => setLoading(false))
   }, [])
 
   function handleSubmit({ history, userName }) {
+    userName = userName ? userName : `User ${Math.floor(Math.random() * 100)}`;
     setPosts([
       ...posts,
       {
