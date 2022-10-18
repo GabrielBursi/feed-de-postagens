@@ -45,6 +45,7 @@ export default function Home() {
       <main>
         <Feed
           loading={loading}
+          hasError = {hasError}
           posts={posts}
           title="Seu Feed"
           subtitle="Acompanhe o que seus amigos estão pensando em tempo real"
