@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import Feed from '../components/Feed';
 import PostForm from '../components/PostForm';
+import { getPosts } from "../services/postServices";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -13,20 +14,15 @@ export default function Home() {
 
       try{
 
-        const response = await fetch("http://localhost:3001/posts");
+        const postsList = await getPosts()
 
-        if(!response.ok){
-          setError(true)
-          return
+        if (!postsList.ok) {
+          setError(true);
+          return;
         }
 
-        const body = await response.json()
-
-        setPosts(body.map(post => ({
-          ...post,
-          publishedAt: new Date(post.publishedAt)
-        })))
-
+        setPosts(postsList)
+        
       }catch(error){
 
         setError(true)
@@ -41,7 +37,6 @@ export default function Home() {
   }, [])
 
   function handleSubmit({ history, userName }) {
-    userName = userName ? userName : `User ${Math.floor(Math.random() * 100)}`;
     setPosts([
       ...posts,
       {
