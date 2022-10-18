@@ -9,6 +9,12 @@ export default function MostViewed() {
   useEffect(() => {
     fetch("http://localhost:3001/posts/most-viewed")
       .then(async (r) => {
+        
+        if(!r.ok){
+          setError(true)
+          return
+        }
+
         const body = await r.json();
         setPosts(
           body.map((post) => ({
@@ -19,7 +25,7 @@ export default function MostViewed() {
       })
       .catch((error) => {
         setError(true);
-        console.log(error);
+        console.log(error.message);
       })
       .finally(() => setLoading(false));
   }, []);

@@ -10,27 +10,34 @@ export default function PostForm(props) {
   const [history, setHistory] = useState('');
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null)
 
   function handleSubmit(event) {
     event.preventDefault();
     setLoading(true);
-    fetch("http://localhost:3001/posts",{
-      method: 'POST',
-      body: JSON.stringify({content: history,userName}),
+    fetch("http://localhost:3001/posts", {
+      method: "POST",
+      body: JSON.stringify({ content: history, userName }),
       headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(() => {
-      props.onSubmit({ history, userName });
-      setLoading(false);
-      setHistory('');
-      setUserName('');
+        "Content-Type": "application/json",
+      },
     })
-
+      .then(() => {
+        props.onSubmit({ history, userName });
+        setHistory("");
+        setUserName("");
+      })
+      .catch((error) => setErrorMessage(`Ocorreu um erro ao cadastrar o post! ( ${error.message} )`))
+      .finally(() => setLoading(false));
   }
 
   return (
     <form className="post-form" onSubmit={handleSubmit}>
+      {errorMessage && (
+        <div className="error-container">
+          <strong>{errorMessage}</strong>
+        </div>
+      )}
       <input
         value={history}
         placeholder="Escreva uma nova história..."
@@ -48,7 +55,7 @@ export default function PostForm(props) {
 
         <button type="submit" disabled={loading || !history}>
           {!loading && <img src={paperPlaneIcon} alt="Paper plane" />}
-          {loading &&<img src={loader} alt='loading' className='spin'/>}
+          {loading && <img src={loader} alt="loading" className="spin" />}
           Publicar
         </button>
       </div>
